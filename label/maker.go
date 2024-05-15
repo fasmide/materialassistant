@@ -30,10 +30,9 @@ func (m *Maker) MaterialSVG(who string) (image.Image, error) {
 
 	c := canvas.New(float64(m.MmWidth), float64(m.MmHeight))
 	ctx := canvas.NewContext(c)
-	ctx.SetFillColor(canvas.Black)
-	cLogo.RenderViewTo(ctx, canvas.Identity.Translate(100, 100))
 	ctx.SetFillColor(canvas.White)
 	ctx.DrawPath(0, 0, canvas.Rectangle(float64(m.MmWidth), float64(m.MmHeight)))
+	cLogo.RenderViewTo(ctx, canvas.Identity.Translate(150, 0).Scale(1.5, 1.5).Rotate(90))
 
 	face := font.Face(128.0, canvas.Black)
 	ctx.DrawText(0, 0, canvas.NewTextLine(face, "Lorem ip  sum", canvas.Left))
