@@ -49,8 +49,8 @@ func NewMaker(w, h float64) (*Maker, error) {
 		return nil, fmt.Errorf("unable to parse logo: %w", err)
 	}
 
-	regular := font.Face(128.0, canvas.Black)
-	bold := fontBold.Face(200.0, canvas.Black)
+	regular := font.Face(12, canvas.Black)
+	bold := fontBold.Face(20, canvas.Black)
 
 	units, err := durafmt.DefaultUnitsCoder.Decode("år:år,uge:uger,dag:dage,time:timer,minute:minutes,second:seconds,millisecond:millliseconds,microsecond:microsseconds")
 	if err != nil {
@@ -65,36 +65,48 @@ func NewMaker(w, h float64) (*Maker, error) {
 	}, nil
 }
 
+func (m *Maker) DebugSVG() error {
+	// 42 x 89mm custom, no scale seems to be the best settings
+	c := canvas.New(89, 36)
+	ctx := canvas.NewContext(c)
+	ctx.SetStrokeColor(canvas.Black)
+	ctx.SetFillColor(canvas.White)
+	ctx.DrawPath(0, 0, canvas.Rectangle(89, 36))
+	return renderers.Write("output2.png", c, canvas.DPMM(7.5))
+}
+
 func (m *Maker) MaterialSVG(who string, d time.Duration, tag *canvas.Canvas) (image.Image, error) {
 	c := canvas.New(m.w, m.h)
 	ctx := canvas.NewContext(c)
 	ctx.SetFillColor(canvas.White)
 	ctx.DrawPath(0, 0, canvas.Rectangle(m.w, m.h))
-	m.logo.RenderViewTo(ctx, canvas.Identity.Translate(150, 0).Scale(1.5, 1.5).Rotate(90))
 
-	ctx.DrawText(170, 350, canvas.NewTextLine(m.regular, "Medlem:", canvas.Left))
-	ctx.DrawText(200, 260, canvas.NewTextLine(m.bold, ellipticalTruncate(who, 20), canvas.Left))
+	m.logo.RenderViewTo(ctx, canvas.Identity.Translate(18, 0).Scale(0.13, 0.13).Rotate(90))
 
-	ctx.DrawText(170, 180, canvas.NewTextLine(m.regular, fmt.Sprintf("Udløb %s, den:", durafmt.Parse(d).Format(m.durUnits)), canvas.Left))
-	ctx.DrawText(200, 90, canvas.NewTextLine(m.bold, time.Now().Add(d).Format("2006-01-02 15:04:05"), canvas.Left))
+	ctx.DrawText(17.0, 30.0, canvas.NewTextLine(m.regular, "Medlem:", canvas.Left))
+	ctx.DrawText(17.0, 21.75, canvas.NewTextLine(m.bold, ellipticalTruncate(who, 16), canvas.Left))
+
+	ctx.DrawText(17.0, 14.0, canvas.NewTextLine(m.regular, fmt.Sprintf("Udløb, %s, den:", durafmt.Parse(d).Format(m.durUnits)), canvas.Left))
+	ctx.DrawText(17.0, 6.0, canvas.NewTextLine(m.bold, time.Now().Add(d).Format("2006-01-02"), canvas.Left))
 	w, h := tag.Size()
-	tag.RenderViewTo(ctx, canvas.Identity.Translate(m.w-(w+50), (m.h/2)-h/2))
-	err := renderers.Write("output2.png", c, canvas.DPMM(1.0))
+	tag.RenderViewTo(ctx, canvas.Identity.Translate(m.w-(w), (m.h/2)-h/2))
+
+	err := renderers.Write("output2.png", c, canvas.DPMM(8))
 
 	return nil, err
 }
 
 func (m *Maker) TagUseAllowed() *canvas.Canvas {
-	c := canvas.New(100, 100)
+	c := canvas.New(0, 0)
 	ctx := canvas.NewContext(c)
 	ctx.Rotate(90)
-	ctx.Scale(2.3, 2.3)
-	ctx.DrawText(0, 0, canvas.NewTextLine(m.bold, "use", canvas.Center))
+	ctx.Scale(2.5, 2.5)
+	ctx.DrawText(0, 3, canvas.NewTextLine(m.bold, "use", canvas.Center))
 
 	ctx = canvas.NewContext(c)
 	ctx.Rotate(90)
-	ctx.Scale(1.1, 1.1)
-	ctx.DrawText(0, -70, canvas.NewTextLine(m.bold, "allowed", canvas.Center))
+	ctx.Scale(1.2, 1.2)
+	ctx.DrawText(0, 0, canvas.NewTextLine(m.bold, "allowed", canvas.Center))
 
 	c.Fit(0)
 	return c
@@ -105,12 +117,12 @@ func (m *Maker) TagDoNotHack() *canvas.Canvas {
 	ctx := canvas.NewContext(c)
 	ctx.Rotate(90)
 	ctx.Scale(1.45, 1.45)
-	ctx.DrawText(0, 0, canvas.NewTextLine(m.bold, "do not", canvas.Center))
+	ctx.DrawText(0, 7.5, canvas.NewTextLine(m.bold, "do not", canvas.Center))
 
 	ctx = canvas.NewContext(c)
 	ctx.Rotate(90)
-	ctx.Scale(1.7, 1.7)
-	ctx.DrawText(0, -65, canvas.NewTextLine(m.bold, "hack", canvas.Center))
+	ctx.Scale(2, 2)
+	ctx.DrawText(0, 0, canvas.NewTextLine(m.bold, "hack", canvas.Center))
 
 	c.Fit(0)
 	return c
@@ -121,7 +133,7 @@ func (m *Maker) TagSkab() *canvas.Canvas {
 	ctx := canvas.NewContext(c)
 	ctx.Rotate(90)
 	ctx.Scale(1, 1)
-	ctx.DrawText(0, 65, canvas.NewTextLine(m.bold, "This skab", canvas.Center))
+	ctx.DrawText(0, 7.5, canvas.NewTextLine(m.bold, "This skab", canvas.Center))
 
 	ctx = canvas.NewContext(c)
 	ctx.Rotate(90)

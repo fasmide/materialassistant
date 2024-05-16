@@ -7,12 +7,13 @@ import (
 )
 
 func main() {
-	maker, err := label.NewMaker(1191, 413)
+	maker, err := label.NewMaker(89, 36)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = maker.MaterialSVG("KristianKristianKristianKristian", time.Hour*24*(365+(365/2)), maker.TagSkab())
+	_, err = maker.MaterialSVG("Falke Carlsen", time.Hour*24*365*75-(time.Hour*24*8), maker.TagUseAllowed())
+	//err = maker.DebugSVG()
 	if err != nil {
 		panic(err)
 	}
