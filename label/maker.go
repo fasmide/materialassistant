@@ -8,6 +8,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/fasmide/materialassistant/acs"
 	"github.com/hako/durafmt"
 	"github.com/tdewolff/canvas"
 	"github.com/tdewolff/canvas/renderers"
@@ -75,7 +76,7 @@ func (m *Maker) DebugSVG() error {
 	return renderers.Write("output2.png", c, canvas.DPMM(7.5))
 }
 
-func (m *Maker) MaterialSVG(who string, d time.Duration, tag *canvas.Canvas) (image.Image, error) {
+func (m *Maker) MaterialSVG(who acs.Identity, d time.Duration, tag *canvas.Canvas) (image.Image, error) {
 	c := canvas.New(m.w, m.h)
 	ctx := canvas.NewContext(c)
 	ctx.SetFillColor(canvas.White)
@@ -83,10 +84,10 @@ func (m *Maker) MaterialSVG(who string, d time.Duration, tag *canvas.Canvas) (im
 
 	m.logo.RenderViewTo(ctx, canvas.Identity.Translate(18, 0).Scale(0.13, 0.13).Rotate(90))
 
-	ctx.DrawText(17.0, 30.0, canvas.NewTextLine(m.regular, "Medlem:", canvas.Left))
-	ctx.DrawText(17.0, 21.75, canvas.NewTextLine(m.bold, ellipticalTruncate(who, 16), canvas.Left))
+	ctx.DrawText(17.0, 30.0, canvas.NewTextLine(m.regular, fmt.Sprintf("Medlem %d:", who.ForLetID), canvas.Left))
+	ctx.DrawText(17.0, 21.75, canvas.NewTextLine(m.bold, ellipticalTruncate(who.Name, 16), canvas.Left))
 
-	ctx.DrawText(17.0, 14.0, canvas.NewTextLine(m.regular, fmt.Sprintf("Udløb, %s, den:", durafmt.Parse(d).Format(m.durUnits)), canvas.Left))
+	ctx.DrawText(17.0, 14.0, canvas.NewTextLine(m.regular, fmt.Sprintf("Udløb %s, den:", durafmt.Parse(d).Format(m.durUnits)), canvas.Left))
 	ctx.DrawText(17.0, 6.0, canvas.NewTextLine(m.bold, time.Now().Add(d).Format("2006-01-02"), canvas.Left))
 	w, h := tag.Size()
 	tag.RenderViewTo(ctx, canvas.Identity.Translate(m.w-(w), (m.h/2)-h/2))
