@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"image"
 	"time"
-	"unicode"
 
 	"github.com/fasmide/materialassistant/acs"
 	"github.com/hako/durafmt"
@@ -85,7 +84,7 @@ func (m *Maker) MaterialSVG(who acs.Identity, d time.Duration, tag *canvas.Canva
 	m.logo.RenderViewTo(ctx, canvas.Identity.Translate(18, 0).Scale(0.13, 0.13).Rotate(90))
 
 	ctx.DrawText(17.0, 30.0, canvas.NewTextLine(m.regular, fmt.Sprintf("Medlem %d:", who.ForLetID), canvas.Left))
-	ctx.DrawText(17.0, 21.75, canvas.NewTextLine(m.bold, ellipticalTruncate(who.Name, 16), canvas.Left))
+	ctx.DrawText(17.0, 21.75, canvas.NewTextLine(m.bold, ellipticalTruncate(who.Name, 13), canvas.Left))
 
 	ctx.DrawText(17.0, 14.0, canvas.NewTextLine(m.regular, fmt.Sprintf("Udløb %s, den:", durafmt.Parse(d).Format(m.durUnits)), canvas.Left))
 	ctx.DrawText(17.0, 6.0, canvas.NewTextLine(m.bold, time.Now().Add(d).Format("2006-01-02"), canvas.Left))
@@ -148,10 +147,10 @@ func (m *Maker) TagSkab() *canvas.Canvas {
 func ellipticalTruncate(text string, maxLen int) string {
 	lastSpaceIx := maxLen
 	len := 0
-	for i, r := range text {
-		if unicode.IsSpace(r) {
-			lastSpaceIx = i
-		}
+	for range text {
+		// if unicode.IsSpace(r) {
+		//	lastSpaceIx = i
+		// }
 		len++
 		if len > maxLen {
 			return text[:lastSpaceIx] + "..."

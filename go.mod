@@ -19,6 +19,7 @@ require (
 	github.com/go-latex/latex v0.0.0-20230307184459-12ec69307ad9 // indirect
 	github.com/go-text/typesetting v0.0.0-20231013144250-6cc35dbfae7d // indirect
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b // indirect
+	github.com/holoplot/go-evdev v0.0.0-20240306072622-217e18f17db1 // indirect
 	github.com/kolesa-team/go-webp v1.0.4 // indirect
 	github.com/tdewolff/font v0.0.0-20240417221047-e5855237f87b // indirect
 	github.com/tdewolff/minify/v2 v2.20.5 // indirect
