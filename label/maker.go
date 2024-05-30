@@ -4,7 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
-	"image"
+	"io"
 	"time"
 
 	"github.com/fasmide/materialassistant/acs"
@@ -75,7 +75,7 @@ func (m *Maker) DebugSVG() error {
 	return renderers.Write("output2.png", c, canvas.DPMM(7.5))
 }
 
-func (m *Maker) MaterialSVG(who acs.Identity, d time.Duration, tag *canvas.Canvas) (image.Image, error) {
+func (m *Maker) MaterialSVG(who acs.Identity, d time.Duration, tag *canvas.Canvas) (io.Reader, error) {
 	c := canvas.New(m.w, m.h)
 	ctx := canvas.NewContext(c)
 	ctx.SetFillColor(canvas.White)
@@ -91,9 +91,14 @@ func (m *Maker) MaterialSVG(who acs.Identity, d time.Duration, tag *canvas.Canva
 	w, h := tag.Size()
 	tag.RenderViewTo(ctx, canvas.Identity.Translate(m.w-(w), (m.h/2)-h/2))
 
-	err := renderers.Write("output2.png", c, canvas.DPMM(8))
+	r, writer := io.Pipe()
+	render := renderers.PNG(canvas.DPMM(8))
+	go func() {
+		c.Write(writer, render)
+		writer.Close()
+	}()
 
-	return nil, err
+	return r, nil
 }
 
 func (m *Maker) TagUseAllowed() *canvas.Canvas {

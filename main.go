@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/fasmide/materialassistant/acs"
@@ -39,9 +40,17 @@ func main() {
 
 		fmt.Printf("Found member: %+v\n", id)
 
-		_, err = maker.MaterialSVG(id, time.Hour*24*365*7, maker.TagUseAllowed())
-		//err = maker.DebugSVG()
+		imgReader, err := maker.MaterialSVG(id, time.Hour*24*365*7, maker.TagUseAllowed())
 		if err != nil {
+			panic(err)
+		}
+
+		c := exec.Command("lprint")
+		c.Stdin = imgReader
+
+		out, err := c.Output()
+		if err != nil {
+			fmt.Printf("lprint said:\n%s", string(out))
 			panic(err)
 		}
 	}
